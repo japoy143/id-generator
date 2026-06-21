@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@theme {
+  --color-brand-red: #c41c1c;
+  --color-brand-dark: #1a3a6e;
+}
+
+@media print {
+  body > *:not(#print-root) {
+    display: none !important;
+  }
+
+  #print-root {
+    display: block !important;
+  }
+}
