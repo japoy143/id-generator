@@ -104,6 +104,9 @@ export default function Home() {
             <h1 className="text-sm font-semibold text-gray-900 leading-none">
               ID Card Printer
             </h1>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Carlos L. Albert High School · S.Y. 2026–2027
+            </p>
           </div>
 
           <div className="ml-auto flex items-center gap-1.5 text-xs text-gray-400">
@@ -159,6 +162,7 @@ export default function Home() {
               frontFrame={frontFrame}
               backFrame={backFrame}
               settings={settings}
+              onSettingsChange={updateSettings}
             />
           )}
         </div>

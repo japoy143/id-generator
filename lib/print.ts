@@ -15,6 +15,7 @@ export function buildPrintHTML(
     photoHeight,
     textFields,
     cardGap = 0.1,
+    backLayoutMode = "mirror-rows",
   } = settings;
 
   // Gap is applied as margin on each card; both sides of gap = cardGap/2 each side
@@ -76,6 +77,23 @@ export function buildPrintHTML(
       })
       .join("");
 
+  // Reverses the order of cards within each row of a chunk. Used so that,
+  // after printing front/back pages separately and cutting individual
+  // cards, flipping a card left-to-right lines its back up with its front.
+  function mirrorRow(chunk: Student[]): Student[] {
+    const mirrored: Student[] = [];
+    for (let r = 0; r < chunk.length; r += perRow) {
+      mirrored.push(...chunk.slice(r, r + perRow).reverse());
+    }
+    return mirrored;
+  }
+
+  function orderForBack(chunk: Student[]): Student[] {
+    if (backLayoutMode === "mirror-rows") return mirrorRow(chunk);
+    // "same-order" and "duplex" both keep the original order today.
+    return chunk;
+  }
+
   const pages: string[] = [];
 
   // Front pages
@@ -95,10 +113,11 @@ export function buildPrintHTML(
     );
   }
 
-  // Back pages (same order → aligns when duplex flip on short edge)
+  // Back pages — ordering depends on backLayoutMode (see orderForBack above)
   for (let p = 0; p < students.length; p += perPage) {
     const chunk = students.slice(p, p + perPage);
-    const cells = chunk
+    const ordered = orderForBack(chunk);
+    const cells = ordered
       .map(
         (s) => `<div style="${cardStyle}">
           ${frameImg(backFrame)}

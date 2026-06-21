@@ -51,6 +51,26 @@ export interface TextFieldConfig {
   fontFamily: string; // CSS font-family stack
 }
 
+/**
+ * Controls how cards are ordered on the "Back Cards" print page relative
+ * to the "Front Cards" page.
+ *
+ * - "mirror-rows": Reverses the order of cards within each row on the back
+ *   page. Use this when you plan to print both pages separately, cut out
+ *   individual cards, and physically flip each one left-to-right to check
+ *   it against its front — the mirrored order keeps each card's back lined
+ *   up with its front in the stack.
+ * - "same-order": Back cards keep the exact same left-to-right, top-to-bottom
+ *   order as the front cards. Use this if you don't need physical alignment
+ *   between the two pages (e.g. you're matching cards by name afterward).
+ * - "duplex": Same ordering as "same-order", kept as a distinct label so the
+ *   UI can communicate "my printer handles the flip" even though the
+ *   underlying card order is identical today. If duplex behavior ever needs
+ *   different ordering logic (e.g. column-mirroring for long-edge flips),
+ *   this is the value to branch on.
+ */
+export type BackLayoutMode = "mirror-rows" | "same-order" | "duplex";
+
 export interface CardSettings {
   cardWidth: number;
   cardHeight: number;
@@ -60,6 +80,7 @@ export interface CardSettings {
   photoHeight: number;
   textFields: TextFieldConfig[];
   cardGap: number; // gap between cards in inches
+  backLayoutMode: BackLayoutMode;
 }
 
 export const STUDENT_FIELDS: StudentField[] = [
@@ -122,6 +143,7 @@ export const DEFAULT_SETTINGS: CardSettings = {
   photoHeight: 30,
   textFields: DEFAULT_TEXT_FIELDS,
   cardGap: 0.1,
+  backLayoutMode: "mirror-rows",
 };
 
 export const CSV_HEADERS = [

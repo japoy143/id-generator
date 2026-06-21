@@ -2,7 +2,7 @@
 
 import React from "react";
 import CardPreview from "../ui/CardPreview";
-import { Student, CardSettings } from "@/lib/types";
+import { Student, CardSettings, BackLayoutMode } from "@/lib/types";
 import { buildPrintHTML, triggerPrint } from "@/lib/print";
 
 interface Props {
@@ -10,13 +10,21 @@ interface Props {
   frontFrame: string | null;
   backFrame: string | null;
   settings: CardSettings;
+  onSettingsChange: (s: Partial<CardSettings>) => void;
 }
+
+const BACK_LAYOUT_OPTIONS: { value: BackLayoutMode; label: string }[] = [
+  { value: "mirror-rows", label: "Cut & flip cards (mirror rows)" },
+  { value: "same-order", label: "Same order (no mirroring)" },
+  { value: "duplex", label: "Auto-duplex printer (flip on short edge)" },
+];
 
 export default function PrintTab({
   students,
   frontFrame,
   backFrame,
   settings,
+  onSettingsChange,
 }: Props) {
   function handlePrint() {
     const html = buildPrintHTML(students, frontFrame, backFrame, settings);
@@ -27,12 +35,14 @@ export default function PrintTab({
     <div className="space-y-5">
       <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-sm text-amber-800">
         <strong>Printing tip:</strong> Page 1 = all front cards, Page 2 = all
-        back cards. Print double-sided using <em>Flip on Short Edge</em> for
-        perfectly aligned back-to-back IDs. After printing, cut along the card
-        outlines.
+        back cards. If you're cutting cards by hand, use{" "}
+        <em>Cut &amp; flip cards</em> below so the back of each card lines up
+        with its front after cutting. If your printer supports automatic
+        double-sided printing, use <em>Auto-duplex printer</em> with{" "}
+        <em>Flip on Short Edge</em> instead.
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-4">
         <button
           onClick={handlePrint}
           disabled={students.length === 0}
@@ -54,9 +64,35 @@ export default function PrintTab({
           </svg>
           Print All Cards
         </button>
+
         <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
           {students.length} card{students.length !== 1 ? "s" : ""}
         </span>
+
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="back-layout-mode"
+            className="text-xs font-medium text-gray-500 whitespace-nowrap"
+          >
+            Back card order:
+          </label>
+          <select
+            id="back-layout-mode"
+            value={settings.backLayoutMode}
+            onChange={(e) =>
+              onSettingsChange({
+                backLayoutMode: e.target.value as BackLayoutMode,
+              })
+            }
+            className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          >
+            {BACK_LAYOUT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {students.length === 0 ? (
